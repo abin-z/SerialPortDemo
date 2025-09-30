@@ -26,3 +26,6 @@ add_subdirectory(serial_port)
 
 add_executable(serialportDemo main.cpp)
 target_link_libraries(serialportDemo PRIVATE serialport)
+
+add_executable(serialportTest main2.cpp)
+target_link_libraries(serialportTest PRIVATE serialport)
