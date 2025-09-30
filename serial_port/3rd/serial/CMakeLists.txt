@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 # 如果作为子目录使用，可以不写 project()
-project(serial)
+# project(serial)
 
 set(serial_SRCS
     src/serial.cc

@@ -1,6 +1,8 @@
 #include <serial/serial.h>
 #include <iostream>
 
+/// 原生的serial串口通信示例程序
+
 int main()
 {
     // List all available serial ports

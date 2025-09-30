@@ -22,7 +22,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/build_output/bin)
 # 可执行文件输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/build_output/bin)
 
-add_executable(serialport main.cpp)
+add_subdirectory(serial_port)
 
-add_subdirectory(3rd/serial)
-target_link_libraries(serialport PRIVATE serial)
+add_executable(serialportDemo main.cpp)
+target_link_libraries(serialportDemo PRIVATE serialport)
