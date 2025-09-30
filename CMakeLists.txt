@@ -24,5 +24,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/build_output/bin)
 
 add_executable(serialport main.cpp)
 
-add_subdirectory(third_party/serial)
+add_subdirectory(3rd/serial)
 target_link_libraries(serialport PRIVATE serial)
