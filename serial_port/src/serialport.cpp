@@ -83,7 +83,7 @@ bool SerialPort::open()
   // 重连尝试
   for (size_t attempt = 1; attempt <= reconnect_max_; ++attempt)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500 * attempt));
     try
     {
       serial_.open();
@@ -197,7 +197,7 @@ void SerialPort::reconnect()
 
   for (size_t attempt = 1; attempt <= reconnect_max_ && running_; ++attempt)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500 * attempt));  // 指数退避
     try
     {
       serial_.open();
