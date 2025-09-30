@@ -12,7 +12,7 @@ int main()
   // 配置串口参数并注册回调
   sp.setPort("COM3")  // Windows 示例, Linux: "/dev/ttyUSB0"
     .setBaudRate(115200)
-    .setTimeout(1000)
+    .setTimeout(0)
     // .setReconnectLimit(0)
     .setLogCallback([](SerialPort::LogLevel level, const std::string& msg) {
       std::string levelStr;
@@ -39,13 +39,14 @@ int main()
     return 1;
   }
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  for (int i = 0; i < 5; ++i)
+  {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    sp.write("Hello Serial!\r\n");
+  }
 
-  // 写数据
-  sp.write("Hello Serial!\r\n");
-
-  // 等待 10 秒，接收数据
-  std::this_thread::sleep_for(std::chrono::seconds(10));
+  // 等待 5 秒，接收数据
+  std::this_thread::sleep_for(std::chrono::seconds(5));
 
   // 关闭串口
   sp.close();

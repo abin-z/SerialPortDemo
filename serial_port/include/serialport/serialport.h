@@ -50,7 +50,7 @@ class SerialPort
   std::string port_;
   uint32_t baudrate_{0};
   size_t reconnect_max_{0};
-  uint32_t timeout_ms_{1000};
+  uint32_t timeout_ms_{10};
   std::atomic_bool running_{false};
   std::thread reader_thread_;
   std::mutex mtx_;

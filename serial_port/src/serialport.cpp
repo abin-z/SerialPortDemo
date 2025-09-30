@@ -156,6 +156,7 @@ void SerialPort::stop()
 
 void SerialPort::readLoop()
 {
+  std::vector<uint8_t> buffer(1024 * 64);  // 64KB 缓冲区
   while (running_)
   {
     try
@@ -167,10 +168,16 @@ void SerialPort::readLoop()
         continue;
       }
 
-      std::string data = serial_.readline();
-      if (!data.empty() && data_cb_)
+      // 读取最多 buffer.size() 字节，复用 buffer
+      size_t n = serial_.read(buffer.data(), buffer.size());
+      if (n > 0 && data_cb_)
       {
-        data_cb_(data);
+        data_cb_(std::string(reinterpret_cast<const char*>(buffer.data()), n));
+      }
+      else if (n == 0)
+      {
+        // 没有数据，短暂 sleep 避免 CPU 占满
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
       }
     }
     catch (const std::exception& e)
