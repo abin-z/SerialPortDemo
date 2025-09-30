@@ -50,16 +50,15 @@ bool SerialPort::open()
 
   if (port_.empty())
   {
-    if (log_cb_) log_cb_(LogLevel::Error, "SerialPort::open failed: port not set");
+    logMsg(LogLevel::Error, "open failed: port not set");
     return false;
   }
   if (baudrate_ == 0)
   {
-    if (log_cb_) log_cb_(LogLevel::Error, "SerialPort::open failed: baudrate not set");
+    logMsg(LogLevel::Error, "open failed: baudrate not set");
     return false;
   }
 
-  // 第一次尝试打开
   try
   {
     serial_.setPort(port_);
@@ -71,13 +70,13 @@ bool SerialPort::open()
     {
       running_ = true;
       if (!reader_thread_.joinable()) reader_thread_ = std::thread(&SerialPort::readLoop, this);
-      if (log_cb_) log_cb_(LogLevel::Info, "SerialPort opened: " + port_ + " @ " + std::to_string(baudrate_) + "bps");
+      logMsg(LogLevel::Info, "SerialPort opened");
       return true;
     }
   }
   catch (const std::exception& e)
   {
-    if (log_cb_) log_cb_(LogLevel::Warning, "SerialPort::open exception: " + std::string(e.what()));
+    logMsg(LogLevel::Warning, std::string("open exception: ") + e.what());
   }
 
   // 重连尝试
@@ -91,20 +90,17 @@ bool SerialPort::open()
       {
         running_ = true;
         if (!reader_thread_.joinable()) reader_thread_ = std::thread(&SerialPort::readLoop, this);
-        if (log_cb_)
-          log_cb_(LogLevel::Info, "SerialPort reconnected: " + port_ + " @ " + std::to_string(baudrate_) + "bps");
+        logMsg(LogLevel::Info, "SerialPort reconnected");
         return true;
       }
     }
     catch (const std::exception& e)
     {
-      if (log_cb_)
-        log_cb_(LogLevel::Warning,
-                "SerialPort reconnect attempt " + std::to_string(attempt) + " failed: " + std::string(e.what()));
+      logMsg(LogLevel::Warning, "Reconnect attempt " + std::to_string(attempt) + " failed: " + e.what());
     }
   }
 
-  if (log_cb_) log_cb_(LogLevel::Error, "SerialPort::open failed after retries");
+  logMsg(LogLevel::Error, "open failed after retries");
   return false;
 }
 
@@ -116,7 +112,7 @@ void SerialPort::close()
   if (serial_.isOpen())
   {
     serial_.close();
-    if (log_cb_) log_cb_(LogLevel::Info, "SerialPort closed: " + port_);
+    logMsg(LogLevel::Info, "SerialPort closed");
   }
 }
 
@@ -130,7 +126,7 @@ size_t SerialPort::write(const std::string& data)
   std::lock_guard<std::mutex> lock(mtx_);
   if (!serial_.isOpen())
   {
-    if (log_cb_) log_cb_(LogLevel::Error, "SerialPort::write failed: not open");
+    logMsg(LogLevel::Error, "write failed: not open");
     return 0;
   }
 
@@ -140,7 +136,7 @@ size_t SerialPort::write(const std::string& data)
   }
   catch (const std::exception& e)
   {
-    if (log_cb_) log_cb_(LogLevel::Error, "SerialPort::write exception: " + std::string(e.what()));
+    logMsg(LogLevel::Error, std::string("write exception: ") + e.what());
     return 0;
   }
 }
@@ -163,7 +159,7 @@ void SerialPort::readLoop()
     {
       if (!serial_.isOpen())
       {
-        if (log_cb_) log_cb_(LogLevel::Warning, "SerialPort disconnected, try reconnect");
+        logMsg(LogLevel::Warning, "disconnected, try reconnect");
         reconnect();
         continue;
       }
@@ -182,7 +178,7 @@ void SerialPort::readLoop()
     }
     catch (const std::exception& e)
     {
-      if (log_cb_) log_cb_(LogLevel::Warning, "SerialPort::read exception: " + std::string(e.what()));
+      logMsg(LogLevel::Warning, std::string("read exception: ") + e.what());
       reconnect();
     }
   }
@@ -197,7 +193,7 @@ void SerialPort::reconnect()
 
   for (size_t attempt = 1; attempt <= reconnect_max_ && running_; ++attempt)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500 * attempt));  // 指数退避
+    std::this_thread::sleep_for(std::chrono::milliseconds(500 * attempt));
     try
     {
       serial_.open();
@@ -205,16 +201,26 @@ void SerialPort::reconnect()
       {
         running_ = true;
         if (!reader_thread_.joinable()) reader_thread_ = std::thread(&SerialPort::readLoop, this);
-        if (log_cb_)
-          log_cb_(LogLevel::Info, "SerialPort reconnected: " + port_ + " @ " + std::to_string(baudrate_) + "bps");
+        logMsg(LogLevel::Info, "SerialPort reconnected");
         return;
       }
     }
     catch (...)
     {
-      if (log_cb_) log_cb_(LogLevel::Warning, "SerialPort reconnect attempt " + std::to_string(attempt) + " failed");
+      logMsg(LogLevel::Warning, "Reconnect attempt " + std::to_string(attempt) + " failed");
     }
   }
 
-  if (log_cb_) log_cb_(LogLevel::Error, "SerialPort reconnect failed after retries");
+  logMsg(LogLevel::Error, "reconnect failed after retries");
+}
+
+// ---------- 内部日志函数 ----------
+void SerialPort::logMsg(LogLevel level, const std::string& msg)
+{
+  if (log_cb_)
+  {
+    std::ostringstream oss;
+    oss << "[" << port_ << "@" << baudrate_ << "] " << msg;
+    log_cb_(level, oss.str());
+  }
 }

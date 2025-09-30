@@ -30,7 +30,7 @@ class SerialPort
 
   SerialPort& setPort(const std::string& port);  // 设置串口名称
   SerialPort& setBaudRate(uint32_t baudrate);    // 设置波特率
-  SerialPort& setTimeout(uint32_t timeout_ms);   // 设置超时时间（毫秒）
+  SerialPort& setTimeout(uint32_t timeout_ms);   // 设置接受数据的超时时间（毫秒）
   SerialPort& setReconnectLimit(size_t limit);   // 设置重连次数
   SerialPort& setDataCallback(DataCallback cb);  // 设置数据接收回调
   SerialPort& setLogCallback(LogCallback cb);    // 设置日志回调
@@ -44,13 +44,14 @@ class SerialPort
   void stop();
   void readLoop();
   void reconnect();
+  void logMsg(LogLevel level, const std::string& msg);
 
  private:
   serial::Serial serial_;
   std::string port_;
   uint32_t baudrate_{0};
   size_t reconnect_max_{0};
-  uint32_t timeout_ms_{10};
+  uint32_t timeout_ms_{10};  // 默认 10ms
   std::atomic_bool running_{false};
   std::thread reader_thread_;
   std::mutex mtx_;
