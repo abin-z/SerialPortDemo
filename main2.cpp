@@ -10,10 +10,10 @@ int main()
   SerialPort sp;
 
   // 配置串口参数并注册回调
-  sp.setPort("COM3")  // Windows 示例, Linux: "/dev/ttyUSB0"
+  sp.setPort("COM5")  // Windows 示例, Linux: "/dev/ttyUSB0"
     .setBaudRate(115200)
-    .setTimeout(0)
-    // .setReconnectLimit(0)
+    .setTimeout(10)
+    .setReconnectLimit(3)
     .setLogCallback([](SerialPort::LogLevel level, const std::string& msg) {
       std::string levelStr;
       switch (level)
