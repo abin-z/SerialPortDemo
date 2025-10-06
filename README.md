@@ -1,6 +1,10 @@
 ## 一个串口库的基本使用demo
 
-**使用了这个三方库: [serial](https://github.com/wjwwood/serial.git)**
+本库是一个跨平台简单的串口工具库, 其目的是简化串口的开发
+
+库文件在[serial_port](serial_port)文件夹下
+
+本库**使用了这个三方库: [serial](https://github.com/wjwwood/serial.git)**
 
 - 只包含改库的`include`和`src`文件夹
 - 简化了原来自带的CMakeLists.txt
