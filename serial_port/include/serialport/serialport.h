@@ -67,7 +67,6 @@
  * =============================================================
  */
 
-
 #include <serial/serial.h>
 
 #include <atomic>
@@ -105,7 +104,7 @@ class SerialPort
   /**
    * @brief 默认构造函数
    */
-  SerialPort();
+  SerialPort() = default;
 
   /**
    * @brief 指定端口与波特率的构造函数
@@ -118,6 +117,14 @@ class SerialPort
    * @brief 析构函数，会自动关闭串口与停止读取线程
    */
   ~SerialPort();
+
+  // 禁止复制
+  SerialPort(const SerialPort&) = delete;
+  SerialPort& operator=(const SerialPort&) = delete;
+
+  // 禁止移动
+  SerialPort(SerialPort&&) noexcept = delete;
+  SerialPort& operator=(SerialPort&&) noexcept = delete;
 
   /**
    * @brief 列出系统中所有可用的串口 (静态方法)
@@ -208,6 +215,12 @@ class SerialPort
    * @brief 串口断开时尝试重连
    */
   void reconnect();
+
+  /**
+   * @brief 从另一个 SerialPort 对象移动资源
+   * @param other 另一个 SerialPort 对象
+   */
+  void moveFrom(SerialPort& other) noexcept;
 
   /**
    * @brief 输出日志消息（触发 log_cb_）

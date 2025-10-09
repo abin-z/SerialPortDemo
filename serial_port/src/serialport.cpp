@@ -1,6 +1,10 @@
+/// 说明：串口通信封装类实现
+/// 作者：abin
+/// 日期：2025-09-20
+/// 备注：基于 serial 库(https://github.com/wjwwood/serial)，跨平台支持 Windows / Linux / macOS
+
 #include "serialport/serialport.h"
 
-SerialPort::SerialPort() = default;
 SerialPort::SerialPort(const std::string& port, uint32_t baudrate) : port_(port), baudrate_(baudrate) {}
 
 SerialPort::~SerialPort()
