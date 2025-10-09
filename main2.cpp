@@ -23,12 +23,12 @@ int main()
   // 创建串口对象
   SerialPort sp;
 
-  // 配置串口参数并注册回调
+  // 配置串口参数并注册回调 (回调函数在独立线程中调用)
   sp.setPort("COM5")  // Windows 示例, Linux: "/dev/ttyUSB0"
     .setBaudRate(115200)
-    .setTimeout(10)
-    .setReconnectLimit(3)
-    .setLogCallback([](SerialPort::LogLevel level, const std::string& msg) {
+    .setTimeout(10)                                                           // 读超时 10ms
+    .setReconnectLimit(3)                                                     // 最大重连 3 次
+    .setLogCallback([](SerialPort::LogLevel level, const std::string& msg) {  // 日志回调
       std::string levelStr;
       switch (level)
       {
@@ -44,7 +44,7 @@ int main()
       }
       std::cout << levelStr << msg << std::endl;
     })
-    .setDataCallback([](const std::string& data) { std::cout << "[DATA] " << data << std::endl; });
+    .setDataCallback([](const std::string& data) { std::cout << "[DATA] " << data << std::endl; });  // 数据回调
 
   // 打开串口
   if (!sp.open())

@@ -2,6 +2,72 @@
 #ifndef SERIAL_PORT_H
 #define SERIAL_PORT_H
 
+/**
+ * ================= SerialPort 使用最佳实践 =================
+ *
+ * 1. 构造与初始化
+ *    - 可以使用默认构造函数，然后链式设置参数：
+ *        SerialPort sp;
+ *        sp.setPort("COM3")
+ *          .setBaudRate(115200)
+ *          .setTimeout(100)
+ *          .setReconnectLimit(3);
+ *
+ *    - 也可以在构造时直接指定端口和波特率：
+ *        SerialPort sp("COM3", 115200);
+ *
+ *
+ * 2. 回调设置
+ *    - 设置数据回调用于异步接收串口数据：
+ *        sp.setDataCallback([](const std::string &data){
+ *            // 处理接收到的数据
+ *        });
+ *
+ *    - 设置日志回调用于调试和错误信息输出：
+ *        sp.setLogCallback([](SerialPort::LogLevel level, const std::string &msg){
+ *            std::cout << msg << std::endl;
+ *        });
+ *
+ *
+ * 3. 打开与关闭
+ *    - 打开串口会启动内部读线程：
+ *        if (!sp.open()) {
+ *            std::cerr << "Failed to open serial port" << std::endl;
+ *        }
+ *
+ *    - 关闭串口会停止读线程：
+ *        sp.close();
+ *
+ *
+ * 4. 数据发送
+ *    - write() 是线程安全的：
+ *        sp.write("Hello World");
+ *
+ *
+ * 5. 线程与重连
+ *    - 内部使用单独线程读串口数据，自动触发数据回调。
+ *    - 当串口断开时，会根据 reconnect_limit 尝试自动重连。
+ *    - 注意：readLoop 在内部处理异常，无需用户手动管理线程。
+ *
+ *
+ * 6. 列出可用串口
+ *    - 可以通过静态函数获取系统当前串口列表：
+ *        auto ports = SerialPort::listPorts();
+ *        for (const auto &p : ports) {
+ *            std::cout << p.port << " : " << p.description << std::endl;
+ *        }
+ *
+ *
+ * 7. 注意事项
+ *    - 建议在程序退出前调用 close()，以释放串口资源。(析构时会自动调用)
+ *    - 回调中避免阻塞操作，否则可能影响数据读取速度。
+ *    - setTimeout 影响串口读超时时间，建议根据实际设备调整。
+ *
+ *
+ * =============================================================
+ */
+
+
 #include <serial/serial.h>
 
 #include <atomic>
