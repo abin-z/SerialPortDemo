@@ -61,9 +61,10 @@ bool SerialPort::open()
 
   try
   {
+    auto timeout = serial::Timeout::simpleTimeout(timeout_ms_);
     serial_.setPort(port_);
     serial_.setBaudrate(baudrate_);
-    serial_.setTimeout(serial::Timeout::simpleTimeout(timeout_ms_));
+    serial_.setTimeout(timeout);
     serial_.open();
 
     if (serial_.isOpen())
