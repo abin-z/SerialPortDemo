@@ -8,47 +8,54 @@ SerialPort::~SerialPort()
   close();
 }
 
+/// @brief 列出系统当前可用串口
 std::vector<serial::PortInfo> SerialPort::listPorts()
 {
   return serial::list_ports();
 }
 
+/// @brief 设置串口端口名
 SerialPort& SerialPort::setPort(const std::string& port)
 {
   port_ = port;
   return *this;
 }
 
+/// @brief 设置波特率
 SerialPort& SerialPort::setBaudRate(uint32_t baudrate)
 {
   baudrate_ = baudrate;
   return *this;
 }
 
+/// @brief 设置串口读取超时时间, 单位毫秒
 SerialPort& SerialPort::setTimeout(uint32_t timeout_ms)
 {
   timeout_ms_ = timeout_ms;
   return *this;
 }
 
+/// @brief 设置自动重连最大次数
 SerialPort& SerialPort::setReconnectLimit(size_t limit)
 {
   reconnect_max_ = limit;
   return *this;
 }
 
+/// @brief 设置数据接收回调
 SerialPort& SerialPort::setDataCallback(DataCallback cb)
 {
   data_cb_ = std::move(cb);
   return *this;
 }
-
+/// @brief 设置日志输出回调
 SerialPort& SerialPort::setLogCallback(LogCallback cb)
 {
   log_cb_ = std::move(cb);
   return *this;
 }
 
+/// @brief 打开串口
 bool SerialPort::open()
 {
   std::lock_guard<std::mutex> lock(mtx_);
@@ -110,9 +117,10 @@ bool SerialPort::open()
   return false;
 }
 
+/// @brief 关闭串口
 void SerialPort::close()
 {
-  stop();
+  stop();  // 停止读线程
 
   std::lock_guard<std::mutex> lock(mtx_);
   if (serial_.isOpen())
@@ -122,11 +130,13 @@ void SerialPort::close()
   }
 }
 
+/// @brief 检查串口是否已打开
 bool SerialPort::isOpen() const
 {
   return serial_.isOpen();
 }
 
+/// @brief 向串口发送数据
 size_t SerialPort::write(const std::string& data)
 {
   std::lock_guard<std::mutex> lock(mtx_);
@@ -147,6 +157,7 @@ size_t SerialPort::write(const std::string& data)
   }
 }
 
+/// @brief 内部停止读线程
 void SerialPort::stop()
 {
   running_ = false;
@@ -156,6 +167,7 @@ void SerialPort::stop()
   }
 }
 
+/// @brief 内部读线程主循环
 void SerialPort::readLoop()
 {
   std::vector<uint8_t> buffer(1024 * 64);  // 64KB 缓冲区
@@ -190,6 +202,7 @@ void SerialPort::readLoop()
   }
 }
 
+/// @brief 内部尝试重连串口
 void SerialPort::reconnect()
 {
   stop();
@@ -220,7 +233,7 @@ void SerialPort::reconnect()
   logMsg(LogLevel::Error, "reconnect failed after retries");
 }
 
-// ---------- 内部日志函数 ----------
+/// @brief 内部日志输出
 void SerialPort::logMsg(LogLevel level, const std::string& msg)
 {
   if (log_cb_)

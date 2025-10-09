@@ -54,8 +54,8 @@ class SerialPort
   ~SerialPort();
 
   /**
-   * @brief 列出系统中所有可用的串口
-   * @return 返回包含所有串口信息的向量
+   * @brief 列出系统中所有可用的串口 (静态方法)
+   * @return 返回包含所有串口信息的vector
    */
   static std::vector<serial::PortInfo> listPorts();
 
