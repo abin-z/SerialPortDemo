@@ -44,6 +44,11 @@ SerialPort& SerialPort::setLogCallback(LogCallback cb)
   return *this;
 }
 
+std::vector<serial::PortInfo> SerialPort::listPorts() const
+{
+  return serial::list_ports();
+}
+
 bool SerialPort::open()
 {
   std::lock_guard<std::mutex> lock(mtx_);

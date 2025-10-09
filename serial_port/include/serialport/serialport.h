@@ -14,7 +14,7 @@
  * @brief 串口通信封装类（基于 serial 库）
  *
  * 该类封装了串口的打开、关闭、读写、自动重连与回调通知机制，
- * 提供线程安全的接口，适用于跨平台串口通信（Windows / Linux）。
+ * 提供线程安全的接口，适用于跨平台串口通信（Windows / Linux / macOS）。
  */
 class SerialPort
 {
@@ -94,6 +94,12 @@ class SerialPort
    * @return 返回自身引用以支持链式调用
    */
   SerialPort& setLogCallback(LogCallback cb);
+
+  /**
+   * @brief 列出系统中所有可用的串口
+   * @return 返回包含所有串口信息的向量
+   */
+  std::vector<serial::PortInfo> listPorts() const;
 
   /**
    * @brief 打开串口并启动读线程
