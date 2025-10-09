@@ -8,6 +8,11 @@ SerialPort::~SerialPort()
   close();
 }
 
+std::vector<serial::PortInfo> SerialPort::listPorts()
+{
+  return serial::list_ports();
+}
+
 SerialPort& SerialPort::setPort(const std::string& port)
 {
   port_ = port;
@@ -42,11 +47,6 @@ SerialPort& SerialPort::setLogCallback(LogCallback cb)
 {
   log_cb_ = std::move(cb);
   return *this;
-}
-
-std::vector<serial::PortInfo> SerialPort::listPorts() const
-{
-  return serial::list_ports();
 }
 
 bool SerialPort::open()

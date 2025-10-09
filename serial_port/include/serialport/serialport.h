@@ -54,6 +54,12 @@ class SerialPort
   ~SerialPort();
 
   /**
+   * @brief 列出系统中所有可用的串口
+   * @return 返回包含所有串口信息的向量
+   */
+  static std::vector<serial::PortInfo> listPorts();
+
+  /**
    * @brief 设置串口端口名
    * @param port 串口名称（如 "COM3" 或 "/dev/ttyUSB0"）
    * @return 返回自身引用以支持链式调用
@@ -94,12 +100,6 @@ class SerialPort
    * @return 返回自身引用以支持链式调用
    */
   SerialPort& setLogCallback(LogCallback cb);
-
-  /**
-   * @brief 列出系统中所有可用的串口
-   * @return 返回包含所有串口信息的向量
-   */
-  std::vector<serial::PortInfo> listPorts() const;
 
   /**
    * @brief 打开串口并启动读线程
