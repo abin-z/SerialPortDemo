@@ -6,6 +6,20 @@
 
 int main()
 {
+  // 列出所有可用的串口
+  std::vector<serial::PortInfo> ports = SerialPort::listPorts();
+  if (ports.empty())
+  {
+    std::cout << "No serial ports found." << std::endl;
+    return 0;
+  }
+  std::cout << "Available serial ports:" << std::endl;
+  for (const auto& port : ports)
+  {
+    std::cout << "Port: " << port.port << " | Description: " << port.description
+              << " | Hardware ID: " << port.hardware_id << std::endl;
+  }
+
   // 创建串口对象
   SerialPort sp;
 
