@@ -20,11 +20,19 @@ int main()
               << " | Hardware ID: " << port.hardware_id << std::endl;
   }
 
+  // 根据操作系统选择串口名称
+  std::string port_name;
+#if defined(_WIN32) || defined(_WIN64)
+  port_name = "COM5";  // Windows 示例
+#else
+  port_name = "/dev/ttyS000";  // Linux 示例
+#endif
+
   // 创建串口对象
   SerialPort sp;
 
   // 配置串口参数并注册回调 (回调函数在独立线程中调用)
-  sp.setPort("COM5")  // Windows 示例, Linux: "/dev/ttyUSB0"
+  sp.setPort(port_name)
     .setBaudRate(115200)
     .setTimeout(10)                                                           // 读超时 10ms
     .setReconnectLimit(3)                                                     // 最大重连 3 次
