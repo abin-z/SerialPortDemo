@@ -124,3 +124,4 @@ PS ***\serialport\build_output\bin\Debug>
 
 - 只包含改库的`include`和`src`文件夹
 - 简化了原来自带的CMakeLists.txt
+- 也可以直接使用serial库, 案例在[main.cpp](main.cpp)中
