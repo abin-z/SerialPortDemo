@@ -4,7 +4,7 @@ add_subdirectory(3rd/serial)
 # 生成静态库
 add_library(serialport STATIC src/serialport.cpp)
 
-# 链接依赖
+# 链接依赖, serial也暴露给使用serialport的用户
 target_link_libraries(serialport PUBLIC serial)
 
 # 头文件对外可见
