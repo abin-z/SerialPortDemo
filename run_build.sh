@@ -21,8 +21,7 @@ echo "=== Configure CMake (${BUILD_TYPE}) ==="
 cmake .. -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
 
 echo "=== Build project ==="
-cmake --build . -- -j"$(nproc)"
+cmake --build .
 
 echo "=== Build finished ==="
-echo "Output directory: $(realpath ../build_output/bin)"
 
