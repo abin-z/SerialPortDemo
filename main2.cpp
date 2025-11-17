@@ -1,4 +1,5 @@
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <thread>
 
@@ -28,6 +29,14 @@ int main()
   port_name = "/dev/ttyS000";  // Linux 示例
 #endif
 
+  // 打开文件用于记录数据
+  std::ofstream log_file("serial_log.txt", std::ios::out | std::ios::app);
+  if (!log_file.is_open())
+  {
+    std::cerr << "Failed to open log file!" << std::endl;
+    return 1;
+  }
+
   // 创建串口对象
   SerialPort sp;
 
@@ -52,7 +61,13 @@ int main()
       }
       std::cout << levelStr << msg << std::endl;
     })
-    .setDataCallback([](const std::string& data) { std::cout << "[DATA] " << data << std::endl; });  // 数据回调
+    .setDataCallback([&log_file](const std::string& data) {
+      for (unsigned char c : data)
+      {
+        log_file << std::hex << std::uppercase << (int)c << " ";
+      }
+      log_file << std::dec << std::endl;  // 每条数据换行，并恢复十进制格式
+    });
 
   // 打开串口
   if (!sp.open())
@@ -61,14 +76,19 @@ int main()
     return 1;
   }
 
-  for (int i = 0; i < 5; ++i)
-  {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    sp.write("Hello Serial!\r\n");
-  }
+  std::cout << "Serial port opened. Type messages to send. Type 'exit' to quit.\n";
 
-  // 等待 5 秒，接收数据
-  std::this_thread::sleep_for(std::chrono::seconds(5));
+  // 循环读取用户输入并发送
+  std::string line;
+  while (true)
+  {
+    std::cout << "> ";
+    std::getline(std::cin, line);
+
+    if (line == "exit") break;
+
+    sp.write(line + "\r\n");  // 发送回车换行，可按需要调整
+  }
 
   // 关闭串口
   sp.close();
