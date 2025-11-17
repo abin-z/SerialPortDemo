@@ -21,13 +21,18 @@ int main()
               << " | Hardware ID: " << port.hardware_id << std::endl;
   }
 
-  // 根据操作系统选择串口名称
+  //   // 根据操作系统选择串口名称
+  //   std::string port_name;
+  // #if defined(_WIN32) || defined(_WIN64)
+  //   port_name = "COM5";  // Windows 示例
+  // #else
+  //   port_name = "/dev/ttyS000";  // Linux 示例
+  // #endif
+
+  // 让用户输入串口号
   std::string port_name;
-#if defined(_WIN32) || defined(_WIN64)
-  port_name = "COM5";  // Windows 示例
-#else
-  port_name = "/dev/ttyS000";  // Linux 示例
-#endif
+  std::cout << "Enter the serial port name to use (e.g., COM5 or /dev/ttyUSB0): ";
+  std::getline(std::cin, port_name);
 
   // 打开文件用于记录数据
   std::ofstream log_file("serial_log.txt", std::ios::out | std::ios::app);
@@ -66,6 +71,7 @@ int main()
       {
         log_file << std::hex << std::uppercase << (int)c << " ";
       }
+      log_file.flush();                   // 保证立即写入文件
       log_file << std::dec << std::endl;  // 每条数据换行，并恢复十进制格式
     });
 
