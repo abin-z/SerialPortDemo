@@ -1,13 +1,11 @@
-#include <chrono>
 #include <fstream>
 #include <iostream>
-#include <thread>
 
 #include "serialport/serialport.h"
 
 int main()
 {
-  // 列出所有可用的串口
+  // 列出所有可用的串口, 这个接口不是很全面, 仅供参考
   std::vector<serial::PortInfo> ports = SerialPort::listPorts();
   if (ports.empty())
   {
